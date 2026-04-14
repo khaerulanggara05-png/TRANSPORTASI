@@ -19,7 +19,6 @@
     .fld input:focus, .fld select:focus { border-color: #185FA5; box-shadow: 0 0 0 3px rgba(24,95,165,0.1); background: #fff; }
     .req { color: #dc2626; }
     .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .divider { border: none; border-top: 1px solid #f3f4f6; margin: 4px 0 16px; }
     .chk-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
     .chk { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: #374151; cursor: pointer; }
     .chk input { margin-top: 2px; accent-color: #1D9E75; width: 15px; height: 15px; flex-shrink: 0; }
@@ -47,7 +46,7 @@
 <div class="wrap">
   <div class="header">
     <h1>Pengajuan Peminjaman Kendaraan</h1>
-    <p>Aset Perusahaan</p>
+    <p>Suzuki APV Arena — Aset Perusahaan</p>
   </div>
 
   <div class="card">
@@ -72,6 +71,7 @@
       </select>
       <div class="err-msg" id="e2">Wajib dipilih</div>
     </div>
+  </div>
 
   <div class="card">
     <div class="sec-label">Detail peminjaman</div>
@@ -79,18 +79,18 @@
       <div class="fld">
         <label>Tanggal peminjaman <span class="req">*</span></label>
         <input id="tglB" type="date">
-        <div class="err-msg" id="e4">Wajib diisi</div>
+        <div class="err-msg" id="e3">Wajib diisi</div>
       </div>
       <div class="fld">
         <label>Tanggal kembali <span class="req">*</span></label>
         <input id="tglK" type="date">
-        <div class="err-msg" id="e5">Wajib diisi</div>
+        <div class="err-msg" id="e4">Wajib diisi</div>
       </div>
     </div>
     <div class="fld">
       <label>Tujuan perjalanan <span class="req">*</span></label>
       <input id="tujuan" type="text" placeholder="Contoh: Kunjungan klien di Jakarta Selatan">
-      <div class="err-msg" id="e6">Wajib diisi</div>
+      <div class="err-msg" id="e5">Wajib diisi</div>
     </div>
   </div>
 
@@ -103,7 +103,7 @@
       <label class="chk"><input type="checkbox" class="komit"> Bertanggung jawab atas kerusakan akibat kelalaian</label>
       <label class="chk"><input type="checkbox" class="komit"> Tidak merokok di dalam kendaraan</label>
     </div>
-    <div class="err-msg" id="e7" style="margin-bottom:12px">Centang semua pernyataan terlebih dahulu</div>
+    <div class="err-msg" id="e6" style="margin-bottom:12px">Centang semua pernyataan terlebih dahulu</div>
     <div class="loading" id="loading">Mengirim pengajuan...</div>
     <button class="btn" id="btnKirim" onclick="kirim()">Kirim Pengajuan</button>
   </div>
@@ -122,8 +122,7 @@
 </div>
 
 <script>
-  // ⚠️ GANTI dengan URL Apps Script kamu setelah deploy
-  var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyKUEjSIxPD5K8fE_grzBjBiM1gXX17ZbmxED-0DvPZCGbrlSOE6djZxzlCqOozmznQdg/exec';
+  var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz_DQwzqi_Z-hi6mT2HUhjngzB5ul9x8mszwx8NYzb-isxgUba98dG8MkGrMsj6KR57Zw/exec';
 
   function req(id, eid) {
     var v = document.getElementById(id).value.trim();
@@ -135,13 +134,12 @@
     var ok = true;
     ok = req('nama', 'e1') && ok;
     ok = req('divisi', 'e2') && ok;
-    ok = req('hp', 'e3') && ok;
-    ok = req('tglB', 'e4') && ok;
-    ok = req('tglK', 'e5') && ok;
-    ok = req('tujuan', 'e6') && ok;
+    ok = req('tglB', 'e3') && ok;
+    ok = req('tglK', 'e4') && ok;
+    ok = req('tujuan', 'e5') && ok;
 
     var semua = [...document.querySelectorAll('.komit')].every(c => c.checked);
-    document.getElementById('e7').style.display = semua ? 'none' : 'block';
+    document.getElementById('e6').style.display = semua ? 'none' : 'block';
     if (!ok || !semua) return;
 
     var btn = document.getElementById('btnKirim');
@@ -152,7 +150,6 @@
     var data = {
       nama: document.getElementById('nama').value.trim(),
       divisi: document.getElementById('divisi').value,
-      hp: document.getElementById('hp').value.trim(),
       tglB: document.getElementById('tglB').value,
       tglK: document.getElementById('tglK').value,
       tujuan: document.getElementById('tujuan').value.trim()
@@ -180,7 +177,7 @@
 
   function tutup() {
     document.getElementById('overlay').classList.remove('show');
-    ['nama','hp','tujuan'].forEach(id => document.getElementById(id).value = '');
+    ['nama','tujuan'].forEach(id => document.getElementById(id).value = '');
     ['divisi','tglB','tglK'].forEach(id => document.getElementById(id).value = '');
     document.querySelectorAll('.komit').forEach(c => c.checked = false);
   }
