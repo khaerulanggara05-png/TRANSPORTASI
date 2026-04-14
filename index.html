@@ -28,8 +28,6 @@
     .btn:hover { background: #0C447C; }
     .btn:disabled { background: #9ca3af; cursor: not-allowed; }
     .loading { display: none; text-align: center; color: #6b7280; font-size: 13px; padding: 8px 0; }
-
-    /* Overlay & Popup */
     .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 100; align-items: center; justify-content: center; padding: 1rem; }
     .overlay.show { display: flex; }
     .popup { background: #fff; border-radius: 14px; padding: 2rem 1.75rem; max-width: 360px; width: 100%; text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,0.12); }
@@ -41,7 +39,6 @@
     .pop-refnum { font-size: 15px; font-weight: 600; color: #185FA5; margin-bottom: 1.25rem; }
     .btn-pop { font-family: inherit; font-size: 14px; font-weight: 600; padding: 10px 32px; border-radius: 8px; border: none; background: #185FA5; color: #fff; cursor: pointer; }
     .btn-pop:hover { background: #0C447C; }
-
     @media (max-width: 440px) { .row { grid-template-columns: 1fr; } }
   </style>
 </head>
@@ -50,7 +47,7 @@
 <div class="wrap">
   <div class="header">
     <h1>Pengajuan Peminjaman Kendaraan</h1>
-    <p>Aset Perusahaan</p>
+    <p>Suzuki APV Arena — Aset Perusahaan</p>
   </div>
 
   <div class="card">
@@ -118,7 +115,6 @@
   </div>
 </div>
 
-<!-- Popup -->
 <div class="overlay" id="overlay">
   <div class="popup">
     <div class="pop-bar"></div>
@@ -132,6 +128,9 @@
 </div>
 
 <script>
+  // ⚠️ GANTI dengan URL Apps Script kamu setelah deploy
+  var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwf6A5hRevfcr5bZmAu38CKGdh7XIXE_OQGA61cRkvrpxg6piGukl4mq0xk94ebFjxq3g/exec';
+
   function req(id, eid) {
     var v = document.getElementById(id).value.trim();
     document.getElementById(eid).style.display = v ? 'none' : 'block';
@@ -165,33 +164,30 @@
       tujuan: document.getElementById('tujuan').value.trim()
     };
 
-    google.script.run
-      .withSuccessHandler(function(res) {
-        loading.style.display = 'none';
-        btn.disabled = false;
-        if (res.success) {
-          document.getElementById('popRef').textContent = res.ref;
-          document.getElementById('overlay').classList.add('show');
-        } else {
-          alert('Terjadi kesalahan: ' + res.error);
-        }
-      })
-      .withFailureHandler(function(err) {
-        loading.style.display = 'none';
-        btn.disabled = false;
-        alert('Gagal mengirim. Coba lagi.');
-      })
-      .simpanPengajuan(data);
+    fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    })
+    .then(function() {
+      loading.style.display = 'none';
+      btn.disabled = false;
+      var ref = 'TRX-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random() * 9000) + 1000);
+      document.getElementById('popRef').textContent = ref;
+      document.getElementById('overlay').classList.add('show');
+    })
+    .catch(function() {
+      loading.style.display = 'none';
+      btn.disabled = false;
+      alert('Gagal mengirim. Periksa koneksi internet kamu.');
+    });
   }
 
   function tutup() {
     document.getElementById('overlay').classList.remove('show');
-    document.getElementById('nama').value = '';
-    document.getElementById('divisi').value = '';
-    document.getElementById('hp').value = '';
-    document.getElementById('tglB').value = '';
-    document.getElementById('tglK').value = '';
-    document.getElementById('tujuan').value = '';
+    ['nama','hp','tujuan'].forEach(id => document.getElementById(id).value = '');
+    ['divisi','tglB','tglK'].forEach(id => document.getElementById(id).value = '');
     document.querySelectorAll('.komit').forEach(c => c.checked = false);
   }
 </script>
