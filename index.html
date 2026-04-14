@@ -26,7 +26,6 @@
     .btn { width: 100%; font-family: inherit; font-size: 14px; font-weight: 600; padding: 12px; border-radius: 8px; border: none; background: #185FA5; color: #fff; cursor: pointer; transition: background 0.15s; }
     .btn:hover { background: #0C447C; }
     .btn:disabled { background: #9ca3af; cursor: not-allowed; }
-    .loading { display: none; text-align: center; color: #6b7280; font-size: 13px; padding: 8px 0; }
     .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 100; align-items: center; justify-content: center; padding: 1rem; }
     .overlay.show { display: flex; }
     .popup { background: #fff; border-radius: 14px; padding: 2rem 1.75rem; max-width: 360px; width: 100%; text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,0.12); }
@@ -104,7 +103,6 @@
       <label class="chk"><input type="checkbox" class="komit"> Tidak merokok di dalam kendaraan</label>
     </div>
     <div class="err-msg" id="e6" style="margin-bottom:12px">Centang semua pernyataan terlebih dahulu</div>
-    <div class="loading" id="loading">Mengirim pengajuan...</div>
     <button class="btn" id="btnKirim" onclick="kirim()">Kirim Pengajuan</button>
   </div>
 </div>
@@ -122,7 +120,7 @@
 </div>
 
 <script>
-  var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz_DQwzqi_Z-hi6mT2HUhjngzB5ul9x8mszwx8NYzb-isxgUba98dG8MkGrMsj6KR57Zw/exec';
+  var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxB2ChXsY93ASCswx0oLN-aPpkPV9zh0GY0aUDhKxhmFoe8VE7vLydv46IW_BHD-Po3Dw/exec';
 
   function req(id, eid) {
     var v = document.getElementById(id).value.trim();
@@ -142,11 +140,6 @@
     document.getElementById('e6').style.display = semua ? 'none' : 'block';
     if (!ok || !semua) return;
 
-    var btn = document.getElementById('btnKirim');
-    var loading = document.getElementById('loading');
-    btn.disabled = true;
-    loading.style.display = 'block';
-
     var data = {
       nama: document.getElementById('nama').value.trim(),
       divisi: document.getElementById('divisi').value,
@@ -155,30 +148,23 @@
       tujuan: document.getElementById('tujuan').value.trim()
     };
 
+    // Popup langsung muncul, fetch jalan di background
+    var ref = 'TRX-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random() * 9000) + 1000);
+    document.getElementById('popRef').textContent = ref;
+    document.getElementById('overlay').classList.add('show');
+
     fetch(SCRIPT_URL, {
       method: 'POST',
       mode: 'no-cors',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
-    })
-    .then(function() {
-      loading.style.display = 'none';
-      btn.disabled = false;
-      var ref = 'TRX-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random() * 9000) + 1000);
-      document.getElementById('popRef').textContent = ref;
-      document.getElementById('overlay').classList.add('show');
-    })
-    .catch(function() {
-      loading.style.display = 'none';
-      btn.disabled = false;
-      alert('Gagal mengirim. Periksa koneksi internet kamu.');
     });
   }
 
   function tutup() {
     document.getElementById('overlay').classList.remove('show');
-    ['nama','tujuan'].forEach(id => document.getElementById(id).value = '');
-    ['divisi','tglB','tglK'].forEach(id => document.getElementById(id).value = '');
+    ['nama', 'tujuan'].forEach(id => document.getElementById(id).value = '');
+    ['divisi', 'tglB', 'tglK'].forEach(id => document.getElementById(id).value = '');
     document.querySelectorAll('.komit').forEach(c => c.checked = false);
   }
 </script>
